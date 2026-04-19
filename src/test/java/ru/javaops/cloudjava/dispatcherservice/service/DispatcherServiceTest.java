@@ -60,7 +60,7 @@ class DispatcherServiceTest {
 
     @BeforeEach
     void setupConsumer() {
-        Map<String, Object> consumerProps = new HashMap<>(KafkaTestUtils.consumerProps(KAFKA.getBootstrapServers(), "testConsumer", "true"));
+        Map<String, Object> consumerProps = new HashMap<>(KafkaTestUtils.consumerProps(KAFKA.getBootstrapServers(), "testConsumer", true));
         consumerProps.put("key.deserializer", StringDeserializer.class);
         consumerProps.put("value.deserializer", KafkaAvroDeserializer.class);
         consumerProps.put("schema.registry.url", "http://localhost:" + SCHEMA_REGISTRY.getFirstMappedPort());

@@ -1,7 +1,7 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.5'
-    id 'io.spring.dependency-management' version '1.1.5'
+    id 'org.springframework.boot' version '4.0.2'
+    id 'io.spring.dependency-management' version '1.1.7'
     id 'com.github.davidmc24.gradle.plugin.avro' version '1.9.1'
 }
 
@@ -9,7 +9,9 @@ group = 'ru.javaops.cloudjava'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    sourceCompatibility = '17'
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
 }
 
 configurations {
@@ -26,29 +28,34 @@ repositories {
 }
 
 ext {
-    springCloudVersion ='2023.0.1'
-    avroSerializerVersion='7.6.0'
-    avroVersion='1.11.3'
-    lokiAppenderVersion = '1.5.1'
+    springCloudVersion ='2025.1.0'
+    avroSerializerVersion='8.1.1'
+    avroVersion='1.12.1'
+    lokiAppenderVersion = '2.0.3'
+    springRetryVersion = '2.0.12'
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.springframework.boot:spring-boot-starter-aspectj'
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'org.springframework.boot:spring-boot-starter-kafka'
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
-    implementation 'org.springframework.retry:spring-retry'
+    implementation "org.springframework.retry:spring-retry:${springRetryVersion}"
     implementation "io.confluent:kafka-avro-serializer:${avroSerializerVersion}"
     implementation "org.apache.avro:avro:${avroVersion}"
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
     runtimeOnly "com.github.loki4j:loki-logback-appender:${lokiAppenderVersion}"
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-actuator-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-aspectj-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-kafka-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-    testImplementation 'org.springframework.kafka:spring-kafka-test'
-    testImplementation 'org.testcontainers:junit-jupiter'
-    testImplementation 'org.testcontainers:kafka'
+    testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
+    testImplementation 'org.testcontainers:testcontainers-kafka'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 dependencyManagement {
@@ -59,7 +66,8 @@ dependencyManagement {
 
 bootBuildImage {
     imageName = "${project.name}"
-    environment = ["BP_JVM_VERSION": "17.*"]
+    createdDate = "now"
+    environment = ["BP_JVM_VERSION": "25.*"]
     docker {
         host = "//./pipe/dockerDesktopLinuxEngine"
     }
